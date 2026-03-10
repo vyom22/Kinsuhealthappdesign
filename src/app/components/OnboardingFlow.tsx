@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, FolderHeart, Brain, ChevronRight, Phone, ArrowRight, Check, User, Droplets, Calendar } from 'lucide-react';
+import { Shield, FolderHeart, Brain, ChevronRight, Phone, ArrowRight, Check, User, Droplets, Calendar, Camera, Target, Dumbbell, Heart, Apple, Activity, ChevronDown } from 'lucide-react';
 
 export function SplashScreen() {
   const navigate = useNavigate();
@@ -221,7 +221,7 @@ export function OTPScreen() {
       </div>
 
       <button
-        onClick={() => navigate('/profile-setup')}
+        onClick={() => navigate('/consent')}
         disabled={!filled}
         className="w-full h-[52px] bg-primary text-primary-foreground rounded-2xl flex items-center justify-center gap-2 disabled:opacity-40 active:scale-[0.98] transition-all"
       >
@@ -237,60 +237,208 @@ export function OTPScreen() {
 
 export function ProfileSetupScreen() {
   const navigate = useNavigate();
+  const [step, setStep] = useState<'basic' | 'optional' | 'goals'>('basic');
   const [name, setName] = useState('Priya Sharma');
+  const [gender, setGender] = useState('Female');
   const [dob, setDob] = useState('1992-03-15');
   const [blood, setBlood] = useState('B+');
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const [profession, setProfession] = useState('');
+  const [hasPhoto, setHasPhoto] = useState(false);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+
+  const healthGoals = [
+    { id: 'diabetes', label: 'Manage Diabetes', icon: Droplets, color: '#F59E0B' },
+    { id: 'bp', label: 'Control Blood Pressure', icon: Heart, color: '#DC2626' },
+    { id: 'weight', label: 'Lose Weight', icon: Activity, color: '#10B981' },
+    { id: 'fitness', label: 'Get Fitter', icon: Dumbbell, color: '#3B82F6' },
+    { id: 'diet', label: 'Eat Healthier', icon: Apple, color: '#F97316' },
+    { id: 'thyroid', label: 'Manage Thyroid', icon: Target, color: '#8B5CF6' },
+    { id: 'stress', label: 'Reduce Stress', icon: Brain, color: '#6366F1' },
+    { id: 'chronic', label: 'Track Chronic Illness', icon: Activity, color: '#EC4899' },
+    { id: 'records', label: 'Organize Medical Records', icon: FolderHeart, color: '#0A9B8F' },
+    { id: 'family', label: 'Care for Family', icon: Shield, color: '#6B7280' },
+  ];
+
+  const toggleGoal = (id: string) => {
+    setSelectedGoals(prev => prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]);
+  };
 
   return (
-    <div className="h-full flex flex-col bg-white px-6 pt-12">
-      <h1 style={{ fontSize: '24px', fontWeight: 700 }} className="text-foreground mb-2">Complete Your Profile</h1>
-      <p className="text-muted-foreground mb-8" style={{ fontSize: '14px' }}>Help us personalize your health experience</p>
-
-      <div className="flex flex-col items-center mb-8">
-        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-          <User size={32} className="text-primary" />
+    <div className="h-full flex flex-col bg-white">
+      {/* Progress */}
+      <div className="px-6 pt-12 pb-4">
+        <div className="flex gap-1.5 mb-6">
+          {['basic', 'optional', 'goals'].map((s, i) => (
+            <div key={s} className={`flex-1 h-1.5 rounded-full transition-all ${s === step || (step === 'optional' && i <= 1) || (step === 'goals' && i <= 2) ? 'bg-primary' : 'bg-slate-100'}`} />
+          ))}
         </div>
-        <button className="text-primary" style={{ fontSize: '14px' }}>Add Photo</button>
+
+        <AnimatePresence mode="wait">
+          {step === 'basic' && (
+            <motion.div key="basic" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 700 }} className="text-foreground mb-1">Tell us about yourself</h1>
+              <p className="text-muted-foreground mb-6" style={{ fontSize: '14px' }}>This helps us personalize your experience</p>
+            </motion.div>
+          )}
+          {step === 'optional' && (
+            <motion.div key="optional" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 700 }} className="text-foreground mb-1">A little more... (optional)</h1>
+              <p className="text-muted-foreground mb-6" style={{ fontSize: '14px' }}>Helps us give better health recommendations</p>
+            </motion.div>
+          )}
+          {step === 'goals' && (
+            <motion.div key="goals" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 700 }} className="text-foreground mb-1">What are you here for?</h1>
+              <p className="text-muted-foreground mb-6" style={{ fontSize: '14px' }}>Select all that apply — we'll focus Kinsu around your goals</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      <div className="flex flex-col gap-5">
-        <div>
-          <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Full Name</label>
-          <input value={name} onChange={e => setName(e.target.value)} className="w-full h-[48px] px-4 bg-muted rounded-xl text-foreground" style={{ fontSize: '15px' }} />
-        </div>
-        <div>
-          <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Date of Birth</label>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-[48px] px-4 bg-muted rounded-xl flex items-center">
-              <Calendar size={16} className="text-muted-foreground mr-2" />
-              <input type="date" value={dob} onChange={e => setDob(e.target.value)} className="bg-transparent text-foreground flex-1" style={{ fontSize: '15px' }} />
-            </div>
-          </div>
-        </div>
-        <div>
-          <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Blood Group</label>
-          <div className="flex gap-2 flex-wrap">
-            {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
-              <button
-                key={bg}
-                onClick={() => setBlood(bg)}
-                className={`px-4 py-2 rounded-xl transition-all ${blood === bg ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}
-                style={{ fontSize: '13px' }}
-              >
-                <Droplets size={12} className="inline mr-1" />{bg}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className="flex-1 overflow-y-auto px-6 pb-6">
+        <AnimatePresence mode="wait">
+          {step === 'basic' && (
+            <motion.div key="basic-form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col gap-5">
+              {/* Photo */}
+              <div className="flex flex-col items-center gap-2 mb-2">
+                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center relative">
+                  {hasPhoto ? (
+                    <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-[#088A7F] flex items-center justify-center">
+                      <span className="text-white text-2xl font-bold">{name.slice(0, 2).toUpperCase()}</span>
+                    </div>
+                  ) : (
+                    <User size={32} className="text-primary" />
+                  )}
+                </div>
+                <button onClick={() => setHasPhoto(true)} className="text-primary flex items-center gap-1.5" style={{ fontSize: '13px' }}>
+                  <Camera size={13} /> {hasPhoto ? 'Change Photo' : 'Add Photo'}
+                </button>
+              </div>
+
+              <div>
+                <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Full Name *</label>
+                <input value={name} onChange={e => setName(e.target.value)} className="w-full h-[48px] px-4 bg-muted rounded-xl text-foreground" style={{ fontSize: '15px' }} />
+              </div>
+
+              <div>
+                <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Gender</label>
+                <div className="flex gap-2">
+                  {['Male', 'Female', 'Other', 'Prefer not to say'].map(g => (
+                    <button key={g} onClick={() => setGender(g)}
+                      className={`flex-1 py-2.5 rounded-xl transition-all text-center ${gender === g ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}
+                      style={{ fontSize: '12px', fontWeight: gender === g ? 600 : 400 }}>
+                      {g === 'Prefer not to say' ? 'Other' : g}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Date of Birth</label>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-[48px] px-4 bg-muted rounded-xl flex items-center">
+                    <Calendar size={16} className="text-muted-foreground mr-2" />
+                    <input type="date" value={dob} onChange={e => setDob(e.target.value)} className="bg-transparent text-foreground flex-1" style={{ fontSize: '15px' }} />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Blood Group</label>
+                <div className="flex gap-2 flex-wrap">
+                  {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(bg => (
+                    <button key={bg} onClick={() => setBlood(bg)}
+                      className={`px-4 py-2 rounded-xl transition-all ${blood === bg ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}
+                      style={{ fontSize: '13px' }}>
+                      <Droplets size={12} className="inline mr-1" />{bg}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 'optional' && (
+            <motion.div key="optional-form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col gap-5">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Height (cm)</label>
+                  <input value={height} onChange={e => setHeight(e.target.value)} type="number" placeholder="e.g. 162"
+                    className="w-full h-[48px] px-4 bg-muted rounded-xl text-foreground placeholder:text-muted-foreground" style={{ fontSize: '15px' }} />
+                </div>
+                <div>
+                  <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Weight (kg)</label>
+                  <input value={weight} onChange={e => setWeight(e.target.value)} type="number" placeholder="e.g. 65"
+                    className="w-full h-[48px] px-4 bg-muted rounded-xl text-foreground placeholder:text-muted-foreground" style={{ fontSize: '15px' }} />
+                </div>
+              </div>
+              <div>
+                <label className="text-foreground mb-1.5 block" style={{ fontSize: '13px' }}>Profession</label>
+                <input value={profession} onChange={e => setProfession(e.target.value)} placeholder="e.g. Teacher, Engineer, Homemaker"
+                  className="w-full h-[48px] px-4 bg-muted rounded-xl text-foreground placeholder:text-muted-foreground" style={{ fontSize: '15px' }} />
+              </div>
+              <div className="bg-primary/5 rounded-2xl p-4 border border-primary/15">
+                <p className="text-primary" style={{ fontSize: '12px', lineHeight: '1.5' }}>
+                  💡 These details help us calculate calories burned, recommend appropriate exercises, and track your BMI over time.
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 'goals' && (
+            <motion.div key="goals-form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <div className="grid grid-cols-2 gap-2.5">
+                {healthGoals.map(g => (
+                  <button key={g.id} onClick={() => toggleGoal(g.id)}
+                    className={`p-4 rounded-2xl border flex items-center gap-3 text-left transition-all active:scale-[0.97] ${selectedGoals.includes(g.id) ? 'border-primary bg-primary/5' : 'border-slate-200 bg-white'}`}>
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${g.color}15` }}>
+                      <g.icon size={18} style={{ color: g.color }} />
+                    </div>
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: selectedGoals.includes(g.id) ? '#0A9B8F' : '#374151' }}>
+                      {g.label}
+                    </span>
+                    {selectedGoals.includes(g.id) && (
+                      <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center ml-auto flex-shrink-0">
+                        <Check size={10} className="text-white" strokeWidth={3} />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      <div className="mt-auto pb-10 pt-6">
-        <button
-          onClick={() => navigate('/app/home')}
-          className="w-full h-[52px] bg-primary text-primary-foreground rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-        >
-          Start Using Kinsu <ArrowRight size={18} />
-        </button>
+      <div className="px-6 pb-10 pt-4 border-t border-slate-100">
+        {step === 'basic' && (
+          <button onClick={() => setStep('optional')} disabled={!name}
+            className="w-full h-[52px] bg-primary text-primary-foreground rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-40">
+            Continue <ChevronRight size={18} />
+          </button>
+        )}
+        {step === 'optional' && (
+          <div className="flex flex-col gap-3">
+            <button onClick={() => setStep('goals')}
+              className="w-full h-[52px] bg-primary text-primary-foreground rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+              Continue <ChevronRight size={18} />
+            </button>
+            <button onClick={() => setStep('goals')} className="text-muted-foreground text-center" style={{ fontSize: '14px' }}>Skip for now</button>
+          </div>
+        )}
+        {step === 'goals' && (
+          <div className="flex flex-col gap-3">
+            <button onClick={() => navigate('/app/home')} disabled={selectedGoals.length === 0}
+              className="w-full h-[52px] bg-primary text-primary-foreground rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-40">
+              Start Using Kinsu <ArrowRight size={18} />
+            </button>
+            <button onClick={() => navigate('/app/home')} className="text-muted-foreground text-center" style={{ fontSize: '14px' }}>Skip for now</button>
+          </div>
+        )}
       </div>
     </div>
   );

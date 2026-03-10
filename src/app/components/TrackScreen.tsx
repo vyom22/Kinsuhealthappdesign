@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -61,6 +62,7 @@ const episodes = [
 ];
 
 export default function TrackScreen() {
+  const navigate = useNavigate();
   const [view, setView] = useState<TrackView>('main');
   const [selectedEpisode, setSelectedEpisode] = useState(episodes[0]);
 
@@ -111,20 +113,17 @@ export default function TrackScreen() {
         {/* Medications */}
         <div className="flex items-center justify-between mt-3 mb-1">
           <h3 style={{ fontSize: '16px', fontWeight: 600 }}>Medications</h3>
-          <div className="flex gap-2">
-            <button onClick={() => setView('adherence')} className="text-primary" style={{ fontSize: '13px' }}>Analytics</button>
-            <button onClick={() => setView('addMed')} className="w-7 h-7 bg-primary rounded-full flex items-center justify-center"><Plus size={14} className="text-primary-foreground" /></button>
-          </div>
+          <button onClick={() => navigate('/app/medications')} className="text-primary" style={{ fontSize: '13px' }}>View All →</button>
         </div>
         {medications.slice(0, 3).map(m => (
-          <div key={m.id} className="bg-card rounded-2xl p-3.5 border border-border flex items-center gap-3">
+          <button key={m.id} onClick={() => navigate('/app/medications')} className="bg-card rounded-2xl p-3.5 border border-border flex items-center gap-3 w-full text-left">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><Pill size={16} className="text-blue-600" /></div>
             <div className="flex-1">
               <p style={{ fontSize: '14px', fontWeight: 500 }}>{m.name}</p>
               <p className="text-muted-foreground" style={{ fontSize: '12px' }}>{m.schedule} · {m.adherence}% adherence</p>
             </div>
             <ChevronRight size={16} className="text-muted-foreground" />
-          </div>
+          </button>
         ))}
 
         {/* More Tracking */}
@@ -134,13 +133,23 @@ export default function TrackScreen() {
         <div className="grid grid-cols-2 gap-2">
           <button onClick={() => setView('chronicTracker')} className="bg-card rounded-2xl p-3.5 border border-border text-left active:scale-[0.98] transition-transform">
             <AlertCircle size={18} className="text-amber-500 mb-2" />
-            <p style={{ fontSize: '13px', fontWeight: 500 }}>Chronic Symptoms</p>
+            <p style={{ fontSize: '13px', fontWeight: 600 }} className="text-foreground">Chronic Symptoms</p>
             <p className="text-muted-foreground" style={{ fontSize: '11px' }}>Track ongoing conditions</p>
           </button>
           <button onClick={() => setView('episodeTimeline')} className="bg-card rounded-2xl p-3.5 border border-border text-left active:scale-[0.98] transition-transform">
             <Brain size={18} className="text-purple-500 mb-2" />
-            <p style={{ fontSize: '13px', fontWeight: 500 }}>Illness Episodes</p>
+            <p style={{ fontSize: '13px', fontWeight: 600 }} className="text-foreground">Illness Episodes</p>
             <p className="text-muted-foreground" style={{ fontSize: '11px' }}>Linked health events</p>
+          </button>
+          <button onClick={() => navigate('/app/exercise')} className="bg-card rounded-2xl p-3.5 border border-border text-left active:scale-[0.98] transition-transform">
+            <Zap size={18} className="text-green-500 mb-2" />
+            <p style={{ fontSize: '13px', fontWeight: 600 }} className="text-foreground">Exercise Log</p>
+            <p className="text-muted-foreground" style={{ fontSize: '11px' }}>Log workouts & activity</p>
+          </button>
+          <button onClick={() => navigate('/app/sleep')} className="bg-card rounded-2xl p-3.5 border border-border text-left active:scale-[0.98] transition-transform">
+            <Moon size={18} className="text-indigo-500 mb-2" />
+            <p style={{ fontSize: '13px', fontWeight: 600 }} className="text-foreground">Sleep Tracker</p>
+            <p className="text-muted-foreground" style={{ fontSize: '11px' }}>Log sleep schedule</p>
           </button>
         </div>
 

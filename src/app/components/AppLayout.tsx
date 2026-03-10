@@ -15,7 +15,13 @@ export default function AppLayout() {
   const location = useLocation();
   const { darkMode } = useApp();
   const isSOSActive = location.pathname.includes('/sos');
-  const hideNav = isSOSActive || location.pathname.includes('/design-system');
+  const hideNav = isSOSActive || location.pathname.includes('/design-system') ||
+    location.pathname.includes('/medications') ||
+    location.pathname.includes('/exercise') ||
+    location.pathname.includes('/diet') ||
+    location.pathname.includes('/sleep') ||
+    location.pathname.includes('/mood') ||
+    location.pathname.includes('/community');
 
   return (
     <div className="flex flex-col h-full bg-background">

@@ -42,7 +42,7 @@ export default function VaultScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(records[0]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [uploadStep, setUploadStep] = useState(0);
+  const [uploadStep, setUploadStep] = useState(1); // Start at step 1 (direct camera/file choice)
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedParam, setSelectedParam] = useState('Hemoglobin');
 
@@ -55,7 +55,7 @@ export default function VaultScreen() {
   if (view === 'detail') return (
     <RecordDetail record={selectedRecord} onBack={() => setView('list')} onViewImaging={() => setView('imaging')} onViewLabTrends={() => setView('labTrends')} />
   );
-  if (view === 'upload') return <UploadFlow step={uploadStep} setStep={setUploadStep} onComplete={() => { setView('list'); setUploadStep(0); }} />;
+  if (view === 'upload') return <UploadFlow step={uploadStep} setStep={setUploadStep} onComplete={() => { setView('list'); setUploadStep(1); }} />;
   if (view === 'labTrends') return <LabTrendsScreen param={selectedParam} setParam={setSelectedParam} onBack={() => setView('list')} />;
   if (view === 'imaging') return <ImagingViewer onBack={() => setView('detail')} />;
   if (view === 'prescription') return <PrescriptionDetail onBack={() => setView('list')} />;
